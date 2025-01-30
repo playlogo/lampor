@@ -1,15 +1,18 @@
 <script lang="ts">
 	import Icon from "@iconify/svelte";
 
-	let panel = $state("code");
+	let panel = $state("canvas");
 
 	// Code
-	import CodeMirror from "../lib/Codemirror.svelte";
+	import CodeMirror from "../lib/codemirror/Codemirror.svelte";
+	import editor from "../lib/stores/editor";
 
 	let view: any;
 	let codemirrorContent = $state("Edit me!\nAnd here is the second line!!");
 
-	function genCode() {}
+	function genCode() {
+		codemirrorContent = editor.generator.generate();
+	}
 
 	function codemirror_select() {
 		view.dispatch({
@@ -51,6 +54,7 @@
 			onclick={() => {
 				panel = "code";
 				view = undefined;
+				genCode();
 			}}>Code</button
 		>
 
@@ -79,7 +83,7 @@
 	main {
 		grid-area: editor;
 
-		background-color: #212121;
+		background-color: #1e1e1e;
 		border-radius: 8px;
 
 		overflow: hidden;

@@ -7,8 +7,9 @@
 <div class="container">
 	<div class="header">
 		<h3>
-			Inspector {#if $editor.selected}
-				- {$editor.selected.type}
+			<span>Inspector</span>
+			{#if $editor.selected}
+				- {$editor.selected.name}
 			{/if}
 		</h3>
 	</div>
@@ -22,8 +23,8 @@
 				</div>
 
 				<div class="group">
-					<span>X</span>
-					<input type="number" bind:value={$editor.selected.position.x} />
+					<span>Y</span>
+					<input type="number" bind:value={$editor.selected.position.y} />
 				</div>
 			</div>
 		</div>
@@ -49,12 +50,14 @@
 							</optgroup>
 						</select>
 					</div>
-				</div>
-				<div>
+
 					<div class="group">
 						<span>Size</span>
 						<input type="number" bind:value={$editor.selected.text.size} />
 					</div>
+				</div>
+				<div>
+					<!--
 					<div class="group">
 						<span>Alignment</span>
 						<button onclick={() => cb_text_alignment("left")}
@@ -66,7 +69,7 @@
 						<button onclick={() => cb_text_alignment("right")}
 							><Icon icon="material-symbols:format-align-right-rounded" /></button
 						>
-					</div>
+					</div>-->
 				</div>
 			</div>
 		{/if}
@@ -94,6 +97,55 @@
 		color: white;
 		padding-left: 24px;
 		font-size: 12px;
+
+		margin-bottom: 12px;
+	}
+
+	.header > h3 > span {
 		text-transform: uppercase;
+	}
+
+	.entry {
+		display: flex;
+		align-items: start;
+		flex-direction: column;
+
+		margin-left: 16px;
+		margin-right: 16px;
+
+		margin-bottom: 16px;
+	}
+
+	.entry > p {
+		margin: 0;
+
+		color: white;
+	}
+
+	.entry > div {
+		display: flex;
+		flex-direction: row;
+		padding-top: 8px;
+
+		align-items: center;
+		padding-left: 24px;
+
+		justify-content: center;
+	}
+
+	.group {
+		display: flex;
+		flex-direction: row;
+		gap: 8px;
+
+		width: auto;
+	}
+
+	.group > span {
+		color: white;
+	}
+
+	.group > input[type="number"] {
+		width: 20%;
 	}
 </style>

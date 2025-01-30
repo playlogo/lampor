@@ -9,24 +9,64 @@
 
 		{#if $editor.document}
 			<div class="actions">
-				<button><Icon icon="material-symbols:add-box-outline" width="16" /> Text</button>
+				<button
+					onclick={() => {
+						editor.actions.createElement("text");
+					}}><Icon icon="material-symbols:add-box-outline" width="16" /> Text</button
+				>
 				<!--<button><Icon icon="material-symbols:add-box-outline" /> Group</button>-->
-				<button><Icon icon="material-symbols:add-box-outline" width="16" /> Image</button>
+				<button
+					onclick={() => {
+						editor.actions.createElement("image");
+					}}><Icon icon="material-symbols:add-box-outline" width="16" /> Image</button
+				>
 			</div>
 		{/if}
 	</div>
 	{#if $editor.document}
 		<div class="hierachy">
 			{#each $editor.document?.elements as element}
-				<div class="element">
+				<div
+					class="element"
+					class:active={$editor.selected?.id === element.id}
+					role="button"
+					tabindex="0"
+					onclick={() => editor.actions.selectElement(element.id)}
+					onkeydown={(e) => {
+						if (e.key === "Enter" || e.key === " ") editor.actions.selectElement(element.id);
+					}}
+				>
 					{#if element.type === "text"}
-						<Icon icon="material-symbols:photo-camera-back-outline-rounded" />
+						<Icon icon="material-symbols:text-fields-rounded" width="20" />
 					{:else}
-						<Icon icon="material-symbols:text-fields-rounded" />
+						<Icon icon="material-symbols:photo-camera-back-outline-rounded" width="20" />
 					{/if}
-					<input bind:value={element.name} type="text" />
-					<button on:click={() => editor.actions.deleteElement(element)}>
-						<Icon icon="material-symbols:delete-outline-rounded" />
+					<input
+						data-value={$state.snapshot(element.name)}
+						bind:value={element.name}
+						onfocusout={(event: FocusEvent) => {
+							if ((event.target as HTMLInputElement).value.length === 0) {
+								element.name = (event.target as HTMLInputElement).getAttribute("data-value")!;
+								(event.target as HTMLInputElement).value = (
+									event.target as HTMLInputElement
+								).getAttribute("data-value")!;
+							} else {
+								event.target.submit();
+							}
+						}}
+						onsubmit={(event: SubmitEvent) => {
+							if ((event.target as HTMLInputElement).value.length === 0) {
+								event.preventDefault();
+								element.name = (event.target as HTMLInputElement).getAttribute("data-value")!;
+								(event.target as HTMLInputElement).value = (
+									event.target as HTMLInputElement
+								).getAttribute("data-value")!;
+							}
+						}}
+						type="text"
+					/>
+					<button type="button" onclick={() => editor.actions.deleteElement(element.id)}>
+						<Icon icon="material-symbols:delete-outline-rounded" width="20" />
 					</button>
 				</div>
 			{/each}
@@ -92,5 +132,73 @@
 
 	.actions > button:hover {
 		background-color: rgba(255, 255, 255, 0.178);
+	}
+
+	/* Element */
+	.element {
+		height: 48px;
+
+		display: flex;
+		align-items: center;
+		padding-left: 12px;
+		gap: 16px;
+
+		color: white;
+
+		cursor: pointer;
+
+		transition: 0.2s background;
+	}
+
+	.element:hover,
+	:global(.active) {
+		background-color: #5c5c5c;
+	}
+
+	.element:hover > button,
+	:global(.active) > button {
+		display: flex !important;
+	}
+
+	.element > button {
+		margin-left: auto;
+		margin-right: 16px;
+
+		background: none;
+		border: none;
+		outline: none;
+
+		color: white;
+
+		border-radius: 8px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 6px;
+
+		cursor: pointer;
+
+		display: none;
+
+		transition: 0.2s background;
+	}
+
+	.element > button:hover {
+		background-color: #888888;
+
+		border: none;
+		outline: none;
+	}
+
+	.element > input {
+		margin: 0;
+		background: none;
+		outline: none;
+		border: none;
+
+		color: white;
+		font-size: 14px;
+
+		width: 70%;
 	}
 </style>
