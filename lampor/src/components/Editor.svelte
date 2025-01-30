@@ -12,6 +12,16 @@
 
 	function genCode() {
 		codemirrorContent = editor.generator.generate();
+
+		if (view) {
+			view.dispatch({
+				changes: {
+					from: 0,
+					to: view.state.doc.length,
+					insert: editor.generator.generate(),
+				},
+			});
+		}
 	}
 
 	function codemirror_select() {
@@ -29,7 +39,6 @@
 
 		navigator.clipboard.writeText(codemirrorContent).then(
 			function () {
-				console.log("Copied text to clipboard");
 				copyButton.classList.add("success");
 			},
 			function (err) {
@@ -61,12 +70,14 @@
 		<div class="separator"></div>
 
 		{#if panel == "canvas"}{:else if panel == "code"}
-			<button onclick={genCode}><Icon icon="material-symbols:directory-sync-rounded" /> Regen </button>
+			<button onclick={genCode}
+				><Icon icon="material-symbols:directory-sync-rounded" width="16" /> Regen
+			</button>
 			<button onclick={codemirror_select}
-				><Icon icon="material-symbols:arrow-selector-tool-outline-rounded" /> Select
+				><Icon icon="material-symbols:arrow-selector-tool-outline-rounded" width="16" /> Select
 			</button>
 			<button bind:this={copyButton} onclick={codemirror_copy}
-				><Icon icon="material-symbols:content-copy-outline" /> Copy
+				><Icon icon="material-symbols:content-copy-outline" width="16" /> Copy
 			</button>
 		{/if}
 	</div>
@@ -93,7 +104,7 @@
 
 	/* Bar */
 	.bar {
-		border-bottom: 1px solid black;
+		border-bottom: 1px solid #131317;
 		display: flex;
 		justify-content: start;
 		align-items: center;
@@ -118,6 +129,10 @@
 
 		padding-left: 16px;
 		padding-right: 16px;
+
+		display: flex;
+		align-items: center;
+		gap: 8px;
 	}
 
 	button:hover {

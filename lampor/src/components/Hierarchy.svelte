@@ -84,7 +84,7 @@
 	}
 
 	.header {
-		border-bottom: 1px solid black;
+		border-bottom: 1px solid #131317;
 		align-items: center;
 		display: flex;
 		justify-content: start;

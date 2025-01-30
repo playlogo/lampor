@@ -1,10 +1,5 @@
 import { writable, get } from "svelte/store";
-import { codeGenerator } from "../generator";
-
-interface EditorState {
-	document: Document;
-	selected: undefined | EditorElement;
-}
+import { downloadZip, plainTextCodeGenerator } from "../generator";
 
 class Document {
 	elements: EditorElement[] = [];
@@ -69,6 +64,12 @@ export interface EditorElement {
 	json: () => string;
 }
 
+/* State */
+interface EditorState {
+	document: Document;
+	selected: undefined | EditorElement;
+}
+
 function useEditor() {
 	const initial_state: EditorState = {
 		document: new Document(),
@@ -78,24 +79,28 @@ function useEditor() {
 	const { subscribe, set, update } = writable<EditorState>(initial_state);
 
 	// Top bar
-	function export_document() {}
-
-	function import_document() {}
-
-	function reset_document() {
-		if (!window.confirm("This will RESET everything! Continue ?")) {
-			return;
-		}
-
-		set(initial_state);
+	async function export_document() {
+		await downloadZip(store);
 	}
 
-	// Generator
-	const generator = {
-		generate: () => {
-			return codeGenerator(get(store).document.elements);
-		},
-	};
+	async function import_document() {}
+
+	async function reset_document() {
+		await new Promise<void>((resolve, reject) => {
+			if (!window.confirm("This will RESET everything! Continue ?")) {
+				reject();
+			} else {
+				resolve();
+			}
+		});
+
+		set({
+			document: new Document(),
+			selected: undefined,
+		});
+
+		window.location.reload();
+	}
 
 	// Editor actions
 	let textElementCount = 0;
@@ -112,7 +117,12 @@ function useEditor() {
 				state.document.elements = state.document.elements;
 
 				if (state.selected && state.selected.id === id) {
-					state.selected = undefined;
+					// Try to select last element
+					if (state.document.elements.length !== 0) {
+						state.selected = state.document.elements.slice(-1)[0];
+					} else {
+						state.selected = undefined;
+					}
 				}
 
 				return state;
@@ -139,8 +149,6 @@ function useEditor() {
 
 					return state;
 				});
-
-				console.log(stringify());
 			}
 		},
 	};
@@ -164,7 +172,9 @@ function useEditor() {
 			state.document.elements = [];
 
 			// Create elements
-			for (const rawElement of elements) {
+			for (let rawElement of elements) {
+				rawElement = JSON.parse(rawElement);
+
 				if (rawElement.type === "text") {
 					const textElement = new TextElement(rawElement.elementCount);
 					lookup_id_element[rawElement.id] = textElement;
@@ -190,21 +200,36 @@ function useEditor() {
 		});
 	}
 
-	// TODO: Debugging: Load default state
-	parse(
-		`[{"type":"text","id":"295512a6-428e-4f3c-944c-2ee9a6717489", "elementCount": 0, "name":"Text-0","position":{"x":0,"y":0},"text":{"font":"default","size":12,"content":"Enter Text", "color": "#ffffff"}}]`
-	);
+	// Serialize before page unload
+	window.addEventListener("beforeunload", () => {
+		localStorage.setItem("serialized", stringify());
+	});
+
+	// Deserialize on page load
+	if (localStorage.getItem("serialized") !== null) {
+		parse(localStorage.getItem("serialized")!);
+	}
 
 	// Store store
 	const store = {
 		subscribe,
 		set,
 		update,
-		export_document,
-		import_document,
-		reset_document,
+		document: {
+			export: export_document,
+			import: import_document,
+			reset: reset_document,
+		},
 		actions,
-		generator,
+		generator: {
+			generate: () => {
+				return plainTextCodeGenerator(get(store).document.elements);
+			},
+		},
+		json: {
+			stringify,
+			parse,
+		},
 	};
 
 	return store;

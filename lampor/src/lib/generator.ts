@@ -1,6 +1,6 @@
 import type { EditorElement } from "./stores/editor";
 
-export function codeGenerator(elements: EditorElement[]): string {
+export function plainTextCodeGenerator(elements: EditorElement[]): string {
 	let code = `import adafruit_display_text.label
 import board
 import displayio
@@ -54,6 +54,32 @@ display.refresh(minimum_frames_per_second=0)
 	return code;
 }
 
+/* Downloader */
+import JSZip from "jszip";
+//@ts-expect-error
+import { saveAs } from "file-saver";
+import Editor from "./stores/editor";
+import { get } from "svelte/store";
+
+export async function downloadZip(editor: typeof Editor) {
+	const elements = get(editor).document.elements;
+
+	// Create zip
+	const zip = new JSZip();
+	zip.file("code.py", plainTextCodeGenerator(elements));
+	zip.file("editor.json", editor.json.stringify());
+
+	// Add images
+	/*
+	const img = zip.folder("images");
+	*/
+
+	// Download zip
+	const content = await zip.generateAsync({ type: "blob" });
+	saveAs(content, "lampor.zip");
+}
+
+/* Utils */
 function convertColor(color: string) {
 	return "0x" + color.slice(1);
 }

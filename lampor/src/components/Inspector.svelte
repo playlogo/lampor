@@ -33,7 +33,6 @@
 				<p>Text</p>
 				<div>
 					<div class="group">
-						<span>Content</span>
 						<textarea bind:value={$editor.selected.text.content}></textarea>
 					</div>
 				</div>
@@ -50,12 +49,12 @@
 							</optgroup>
 						</select>
 					</div>
-
 					<div class="group">
 						<span>Size</span>
 						<input type="number" bind:value={$editor.selected.text.size} />
 					</div>
 				</div>
+
 				<div>
 					<!--
 					<div class="group">
@@ -85,10 +84,13 @@
 
 		border-radius: 8px;
 		background-color: var(--container);
+
+		height: fit-content;
+		min-height: 240px;
 	}
 
 	.header {
-		border-bottom: 1px solid black;
+		border-bottom: 1px solid #131317;
 		align-items: center;
 		display: flex;
 		justify-content: start;
@@ -110,10 +112,18 @@
 		align-items: start;
 		flex-direction: column;
 
-		margin-left: 16px;
-		margin-right: 16px;
-
 		margin-bottom: 16px;
+
+		padding-bottom: 16px;
+
+		border-bottom: 1px solid #131317;
+
+		padding-left: 16px;
+		padding-right: 16px;
+	}
+
+	.entry:last-of-type {
+		border-bottom: none;
 	}
 
 	.entry > p {
@@ -128,17 +138,17 @@
 		padding-top: 8px;
 
 		align-items: center;
-		padding-left: 24px;
 
-		justify-content: center;
+		width: 100%;
 	}
 
 	.group {
 		display: flex;
 		flex-direction: row;
+		align-items: center;
 		gap: 8px;
 
-		width: auto;
+		width: 100%;
 	}
 
 	.group > span {
@@ -146,6 +156,29 @@
 	}
 
 	.group > input[type="number"] {
-		width: 20%;
+		width: 30%;
+	}
+
+	input,
+	textarea,
+	select {
+		background: none;
+		outline: none;
+		border: none;
+
+		border-radius: 8px;
+		color: white;
+		padding: 8px;
+		padding-left: 16px;
+		background-color: #1e1e1e;
+	}
+
+	textarea {
+		width: 100%;
+		height: 64px;
+	}
+
+	.group span {
+		font-size: 12px;
 	}
 </style>

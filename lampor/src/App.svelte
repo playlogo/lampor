@@ -10,28 +10,31 @@
 <div class="sidebar">
 	<div class="logo">
 		<h1>Lampor ✨</h1>
-		<p>Easily layout your LED Panel</p>
+		<p>Layout your LED Panel</p>
 	</div>
 
 	<Hierarchy />
 </div>
 
 <div class="bar">
-	<button on:click={editor.export_document}>
+	<button onclick={editor.document.export}>
 		<Icon icon="material-symbols:download-rounded" width="22" /> Download
 	</button>
-	<button on:click={editor.import_document}>
+	<!--
+	<button onclick={editor.document.import}>
 		<Icon icon="material-symbols:upload-rounded" width="22" /> Import
-	</button>
-	<button on:click={editor.reset_document}>
+	</button>-->
+	<button onclick={editor.document.reset}>
 		<Icon icon="material-symbols:sync-outline" width="22" /> Reset
 	</button>
 </div>
 
 <Editor />
 <Inspector />
-<Preview />
 
+<!--
+<Preview />
+-->
 <style>
 	/* Grid */
 	:global(#app) {
@@ -103,6 +106,8 @@
 		align-items: center;
 
 		overflow: hidden;
+
+		width: fit-content;
 	}
 
 	.bar > button {
