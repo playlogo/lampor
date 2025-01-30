@@ -1,190 +1,119 @@
 <script lang="ts">
-	import Icon from "@iconify/svelte";
+	import store from "../lib/stores/editor";
 
-	let panel = $state("canvas");
+	const WIDTH = 64;
+	const HIGHT = 32;
 
-	// Code
-	import CodeMirror from "../lib/codemirror/Codemirror.svelte";
-	import editor from "../lib/stores/editor";
+	const MAX_OVERFLOW = 8;
 
-	let view: any;
-	let codemirrorContent = $state("Edit me!\nAnd here is the second line!!");
+	let area: HTMLElement;
 
-	function genCode() {
-		codemirrorContent = editor.generator.generate();
-
-		if (view) {
-			view.dispatch({
-				changes: {
-					from: 0,
-					to: view.state.doc.length,
-					insert: editor.generator.generate(),
-				},
-			});
-		}
-	}
-
-	function codemirror_select() {
-		view.dispatch({
-			selection: { anchor: 0, head: codemirrorContent.length },
-		});
-	}
-
-	let copyButton: HTMLElement;
-
-	function codemirror_copy(event: MouseEvent) {
-		copyButton.classList.remove("success");
-
-		codemirror_select();
-
-		navigator.clipboard.writeText(codemirrorContent).then(
-			function () {
-				copyButton.classList.add("success");
-			},
-			function (err) {
-				copyButton.classList.add("error");
-				console.error(err);
-			}
-		);
-	}
+	let dragging_position = { x: 0, y: 0 };
 </script>
 
-<main>
-	<div class="bar">
-		<button
-			class:active={panel == "canvas"}
-			onclick={() => {
-				panel = "canvas";
-				view = undefined;
-			}}>Canvas</button
-		>
-		<button
-			class:active={panel == "code"}
-			onclick={() => {
-				panel = "code";
-				view = undefined;
-				genCode();
-			}}>Code</button
-		>
+<div class="main">
+	<div class="area" bind:this={area}>
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		{#each $store.document.elements as element}
+			<div
+				class:selected={element.id === $store.selected?.id}
+				class="element"
+				draggable="true"
+				role="button"
+				tabindex="0"
+				style={`top: calc(${(element.position.y / HIGHT) * 100}% - 16px); left: calc(${(element.position.x / WIDTH) * 100}% - 16px)`}
+				ondragend={(event) => {
+					const deltaX = event.pageX - dragging_position.x;
+					const deltaY = event.pageY - dragging_position.y;
 
-		<div class="separator"></div>
+					const newPosX = element.position.x + (deltaX / area.clientWidth) * 64;
+					const newPosY = element.position.y + (deltaY / area.clientHeight) * 32;
 
-		{#if panel == "canvas"}{:else if panel == "code"}
-			<button onclick={genCode}
-				><Icon icon="material-symbols:directory-sync-rounded" width="16" /> Regen
-			</button>
-			<button onclick={codemirror_select}
-				><Icon icon="material-symbols:arrow-selector-tool-outline-rounded" width="16" /> Select
-			</button>
-			<button bind:this={copyButton} onclick={codemirror_copy}
-				><Icon icon="material-symbols:content-copy-outline" width="16" /> Copy
-			</button>
-		{/if}
+					if (
+						newPosX < -MAX_OVERFLOW ||
+						newPosX > WIDTH + MAX_OVERFLOW ||
+						newPosY < -MAX_OVERFLOW ||
+						newPosY > HIGHT + MAX_OVERFLOW
+					) {
+						console.log("Illigal move");
+						return;
+					}
+
+					element.position.x = newPosX;
+					element.position.y = newPosY;
+				}}
+				ondragstart={(event) => {
+					dragging_position = {
+						x: event.pageX,
+						y: event.pageY,
+					};
+				}}
+				onclick={() => {
+					$store.selected = element;
+				}}
+			>
+				{#if element.type === "text"}
+					<input
+						bind:value={element.text.content}
+						type="text"
+						style={`font-size: ${element.text.size * 20}%; color: ${element.text.color}`}
+					/>
+				{/if}
+			</div>
+		{/each}
 	</div>
-	{#if panel == "canvas"}
-		<div></div>
-	{:else if panel == "code"}
-		<div class="code">
-			<CodeMirror bind:view bind:doc={codemirrorContent} />
-		</div>
-	{/if}
-</main>
+</div>
 
 <style>
-	main {
-		grid-area: editor;
-
-		background-color: #1e1e1e;
-		border-radius: 8px;
-
-		overflow: hidden;
-
-		margin-bottom: 16px;
-	}
-
-	/* Bar */
-	.bar {
-		border-bottom: 1px solid #131317;
+	.main {
 		display: flex;
-		justify-content: start;
 		align-items: center;
-		height: 48px;
+		justify-content: center;
 
-		position: sticky;
+		margin-top: 64px;
 	}
 
-	.bar > button {
-		border: none;
-		outline: none;
-		border-radius: 0;
-		background: none;
+	.area {
+		width: 80%;
 
+		aspect-ratio: 64/32;
+
+		border: 2px solid black;
+		position: relative;
+	}
+
+	.element {
 		cursor: pointer;
-		font-size: 12px;
 
-		text-transform: uppercase;
-		color: white;
+		border: 2px solid transparent;
+		position: absolute;
 
+		padding: 16px;
+	}
+
+	.element:hover {
+		border: 2px solid var(--color-accent-blue);
+		border-style: dashed !important;
+	}
+
+	.selected {
+		border: 2px solid var(--color-accent-blue);
+		border-style: solid;
+	}
+
+	input {
+		width: 100%;
 		height: 100%;
 
-		padding-left: 16px;
-		padding-right: 16px;
+		background: none;
+		outline: none;
+		border: none;
 
-		display: flex;
-		align-items: center;
-		gap: 8px;
+		field-sizing: content;
 	}
 
-	button:hover {
-		background-color: #5c5c5c;
-	}
-
-	:global(.success) {
-		animation: fade-out-success;
-		animation-fill-mode: forwards;
-		animation-duration: 1s;
-	}
-
-	:global(.error) {
-		animation: fade-out-error;
-		animation-fill-mode: forwards;
-		animation-duration: 1s;
-	}
-
-	@keyframes fade-out-error {
-		0% {
-			background-color: red;
-		}
-		100% {
-			background-color: transparent;
-		}
-	}
-
-	@keyframes fade-out-success {
-		0% {
-			background-color: green;
-		}
-		100% {
-			background-color: transparent;
-		}
-	}
-
-	.active {
-		background-color: #0b81f9 !important;
-		cursor: default !important;
-	}
-
-	.bar > .separator {
-		margin-left: 8px;
-		margin-right: 8px;
-
-		border-left: 1px solid black;
-		height: 100%;
-	}
-
-	/* Code */
-	.code {
-		height: 100%;
-		max-height: calc(100% - 50px);
+	.element:has(input:focus) {
+		border: 2px solid var(--color-accent-blue);
+		border-style: dashed;
 	}
 </style>

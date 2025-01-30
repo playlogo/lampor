@@ -1,10 +1,9 @@
 <script lang="ts">
-	import Inspector from "./components/Inspector.svelte";
-	import Hierarchy from "./components/Hierarchy.svelte";
-	import Editor from "./components/Editor.svelte";
-	import Preview from "./components/Preview.svelte";
+	import Inspector from "./layout/Inspector.svelte";
+	import Hierarchy from "./layout/Hierarchy.svelte";
 	import Icon from "@iconify/svelte";
 	import editor from "./lib/stores/editor";
+	import Main from "./layout/Main.svelte";
 </script>
 
 <div class="sidebar">
@@ -29,7 +28,7 @@
 	</button>
 </div>
 
-<Editor />
+<Main />
 <Inspector />
 
 <!--
@@ -41,8 +40,8 @@
 		display: grid;
 		grid-template-areas:
 			"sidebar bar bar"
-			"sidebar editor inspector"
-			"sidebar editor preview";
+			"sidebar main inspector"
+			"sidebar main preview";
 		grid-template-columns: 380px auto 440px;
 		grid-template-rows: 84px auto 260px;
 

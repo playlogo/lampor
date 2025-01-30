@@ -30,7 +30,7 @@ class TextElement implements EditorElement {
 		font: "default",
 		size: 12,
 		content: "Enter Text",
-		color: "white",
+		color: "#ffffff",
 	};
 
 	constructor(elementCount: number) {

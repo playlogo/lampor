@@ -54,6 +54,12 @@
 						<input type="number" bind:value={$editor.selected.text.size} />
 					</div>
 				</div>
+				<div>
+					<div class="group">
+						<span>Color</span>
+						<input type="color" bind:value={$editor.selected.text.color} />
+					</div>
+				</div>
 
 				<div>
 					<!--
@@ -180,5 +186,11 @@
 
 	.group span {
 		font-size: 12px;
+	}
+
+	input[type="color"] {
+		padding: 1px;
+		padding-left: 4px;
+		padding-right: 4px;
 	}
 </style>
