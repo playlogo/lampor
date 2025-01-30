@@ -74,6 +74,9 @@
 		flex-direction: column;
 
 		margin-bottom: 8px;
+
+		width: fit-content;
+		padding-right: 24px;
 	}
 
 	.logo > h1,

@@ -157,15 +157,21 @@ function useEditor() {
 	function stringify() {
 		const content = get(store).document!.json();
 
-		return JSON.stringify(content);
+		return JSON.stringify({ elements: content });
 	}
 
-	function parse(state: string | undefined = undefined) {
+	function parse(state: any | undefined = undefined) {
 		if (!state) {
 			throw new Error("Invalid state");
 		}
 
-		const elements = JSON.parse(state);
+		let elements;
+
+		if (typeof state === "string") {
+			elements = JSON.parse(state).elements;
+		} else {
+			elements = state.elements;
+		}
 
 		update((state) => {
 			state.selected = undefined;
@@ -208,6 +214,14 @@ function useEditor() {
 	// Deserialize on page load
 	if (localStorage.getItem("serialized") !== null) {
 		parse(localStorage.getItem("serialized")!);
+	} else {
+		parse({
+			elements: [
+				'{"type":"text","id":"9e0f3cc9-7935-4536-a88d-1dccebfc88bf","name":"Text-0","elementCount":0,"position":{"x":2,"y":6},"text":{"font":"terminalio","size":12,"content":"L21 H44","color":"#ff0000"}}',
+				'{"type":"text","id":"7c7f3546-79c9-4a6b-a925-3808a741b2bb","name":"Text-1","elementCount":1,"position":{"x":2,"y":16},"text":{"font":"terminalio","size":12,"content":"01/30 0310","color":"#2bff00"}}',
+				'{"type":"text","id":"5b5bd105-1e95-4eb1-a53f-9c42f22d7ef2","name":"Text-2","elementCount":2,"position":{"x":2,"y":26},"text":{"font":"terminalio","size":12,"content":"Trending To","color":"#ffffff"}}',
+			],
+		});
 	}
 
 	// Store store

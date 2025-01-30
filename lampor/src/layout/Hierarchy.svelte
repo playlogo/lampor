@@ -15,11 +15,12 @@
 					}}><Icon icon="material-symbols:add-box-outline" width="16" /> Text</button
 				>
 				<!--<button><Icon icon="material-symbols:add-box-outline" /> Group</button>-->
+				<!--
 				<button
 					onclick={() => {
 						editor.actions.createElement("image");
 					}}><Icon icon="material-symbols:add-box-outline" width="16" /> Image</button
-				>
+				>-->
 			</div>
 		{/if}
 	</div>
@@ -150,9 +151,12 @@
 		transition: 0.2s background;
 	}
 
-	.element:hover,
+	.element:hover {
+		background-color: rgba(126, 126, 126, 0.178);
+	}
+
 	:global(.active) {
-		background-color: #5c5c5c;
+		background-color: var(--color-accent-blue) !important;
 	}
 
 	.element:hover > button,
@@ -199,6 +203,24 @@
 		color: white;
 		font-size: 14px;
 
-		width: 70%;
+		max-width: 70%;
+
+		field-sizing: content;
+
+		padding: 8px;
+		padding-left: 12px;
+		padding-right: 12px;
+		border-radius: 4px;
+
+		transition: 0.2s background;
+	}
+
+	.element > input:focus,
+	.element > input:hover {
+		background-color: #13141788;
+	}
+
+	.element > input:focus {
+		outline: white;
 	}
 </style>

@@ -27,7 +27,18 @@
 <svelte:window onresize={dispatchResize} />
 
 <div class="main">
-	<div class="area" bind:this={area}>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<div
+		class="area"
+		bind:this={area}
+		onclick={(event) => {
+			if (event.target !== area) {
+				return;
+			}
+			$store.selected = undefined;
+		}}
+	>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		{#each $store.document.elements as element}
 			<div
@@ -35,8 +46,8 @@
 				class="element"
 				draggable="true"
 				role="button"
-				tabindex="0"
-				style={`top: calc(${(element.position.y / HIGHT) * 100}% - 96px); left: calc(${(element.position.x / WIDTH) * 100}% - 28px)`}
+				tabindex={element.elementCount}
+				style={`top: calc(${(element.position.y / HIGHT) * 100}% - 22%); left: calc(${(element.position.x / WIDTH) * 100}% - 2%)`}
 				ondragend={(event) => {
 					const deltaX = event.pageX - dragging_position.start_pageX;
 					const deltaY = event.pageY - dragging_position.start_pageY;
@@ -54,7 +65,11 @@
 						newPosY < -MAX_OVERFLOW ||
 						newPosY > HIGHT + MAX_OVERFLOW
 					) {
-						console.log("Illigal move");
+						console.log("Illegal dragging move");
+
+						element.position.x = Math.max(Math.min(WIDTH + MAX_OVERFLOW, newPosX), -MAX_OVERFLOW);
+						element.position.y = Math.max(Math.min(HIGHT + MAX_OVERFLOW, newPosY), -MAX_OVERFLOW);
+
 						return;
 					}
 
@@ -68,6 +83,8 @@
 						start_elementX: $state.snapshot(element.position.x),
 						start_elementY: $state.snapshot(element.position.y),
 					};
+
+					$store.selected = element;
 
 					// Hide image
 					const img = new Image();
@@ -91,6 +108,15 @@
 				onclick={() => {
 					$store.selected = element;
 				}}
+				onkeypress={(event) => {
+					if (event.key === "Delete") {
+						store.actions.deleteElement(element.id);
+						event.preventDefault();
+						return;
+					}
+
+					console.log(event.key);
+				}}
 			>
 				{#if element.type === "text"}
 					<input
@@ -110,7 +136,12 @@
 		align-items: center;
 		justify-content: center;
 
-		margin-top: 64px;
+		padding-top: 64px;
+
+		overflow-x: hidden;
+		overflow-y: hidden;
+
+		padding-bottom: 64px;
 	}
 
 	.area {
@@ -118,7 +149,7 @@
 
 		aspect-ratio: 64/32;
 
-		border: 2px solid black;
+		border: 2px solid #131417;
 		position: relative;
 	}
 

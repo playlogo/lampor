@@ -154,7 +154,7 @@
 
 	@keyframes fade-out-error {
 		0% {
-			background-color: red;
+			background-color: var(--color-accent-error);
 		}
 		100% {
 			background-color: transparent;
@@ -163,7 +163,7 @@
 
 	@keyframes fade-out-success {
 		0% {
-			background-color: green;
+			background-color: var(--color-accent-success);
 		}
 		100% {
 			background-color: transparent;
@@ -171,7 +171,7 @@
 	}
 
 	.active {
-		background-color: #0b81f9 !important;
+		background-color: var(--color-accent-blue) !important;
 		cursor: default !important;
 	}
 
@@ -179,7 +179,7 @@
 		margin-left: 8px;
 		margin-right: 8px;
 
-		border-left: 1px solid black;
+		border-left: 1px solid #131417;
 		height: 100%;
 	}
 
