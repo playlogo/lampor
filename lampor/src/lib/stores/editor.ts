@@ -11,6 +11,7 @@ interface Document {
 
 interface Element {
 	type: "text";
+	name: string;
 	position: {
 		x: number;
 		y: number;
@@ -45,6 +46,11 @@ function useEditor() {
 		set(initial_state);
 	}
 
+	// Editor actions
+	const actions = {
+		deleteElement: (element: Element) => {},
+	};
+
 	// Store store
 	const store = {
 		subscribe,
@@ -53,6 +59,7 @@ function useEditor() {
 		export_document,
 		import_document,
 		reset_document,
+		actions,
 	};
 
 	return store;

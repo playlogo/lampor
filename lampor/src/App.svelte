@@ -18,13 +18,13 @@
 
 <div class="bar">
 	<button on:click={editor.export_document}>
-		<Icon icon="material-symbols:download-rounded" width="24" /> Download
+		<Icon icon="material-symbols:download-rounded" width="22" /> Download
 	</button>
 	<button on:click={editor.import_document}>
-		<Icon icon="material-symbols:upload-rounded" width="24" /> Import
+		<Icon icon="material-symbols:upload-rounded" width="22" /> Import
 	</button>
 	<button on:click={editor.reset_document}>
-		<Icon icon="material-symbols:sync-outline" width="24" /> Reset
+		<Icon icon="material-symbols:sync-outline" width="22" /> Reset
 	</button>
 </div>
 
@@ -82,6 +82,10 @@
 
 	.logo > p {
 		color: #9b9b9b;
+
+		color: white;
+		font-size: 12px;
+		text-transform: uppercase;
 	}
 
 	/* Top bar */
@@ -105,7 +109,8 @@
 		background: none;
 
 		outline: none;
-		font-size: 14px;
+		font-size: 12px;
+
 		border: none;
 		color: white;
 
