@@ -51,7 +51,7 @@
 									event.target as HTMLInputElement
 								).getAttribute("data-value")!;
 							} else {
-								event.target.submit();
+								event.target!.submit();
 							}
 						}}
 						onsubmit={(event: SubmitEvent) => {

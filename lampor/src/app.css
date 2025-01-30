@@ -15,3 +15,8 @@ body {
 
 	background-color: #131417;
 }
+
+@font-face {
+	font-family: "Terminus";
+	src: url("/fonts/terminus.ttf");
+}

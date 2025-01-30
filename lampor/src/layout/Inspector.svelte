@@ -33,7 +33,10 @@
 				<p>Text</p>
 				<div>
 					<div class="group">
-						<textarea bind:value={$editor.selected.text.content}></textarea>
+						<textarea
+							bind:value={$editor.selected.text.content}
+							style="resize: vertical; max-height: 200px; "
+						></textarea>
 					</div>
 				</div>
 				<div>
@@ -41,18 +44,22 @@
 						<span>Font</span>
 						<select bind:value={$editor.selected.text.font}>
 							<optgroup label="Default">
-								<option value="Default">Default</option>
-								<option value="Google">Google</option>
+								<option value="terminalio">TerminalIO</option>
 							</optgroup>
+							<!--
 							<optgroup label="Custom">
+								
 								<option value="Facebook">Facebook</option>
 							</optgroup>
+							-->
 						</select>
 					</div>
+					<!--
 					<div class="group">
 						<span>Size</span>
 						<input type="number" bind:value={$editor.selected.text.size} />
 					</div>
+					-->
 				</div>
 				<div>
 					<div class="group">

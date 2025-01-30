@@ -32,7 +32,7 @@ group_text = displayio.Group()
 			code += `
 # Text element ${element.name}
 ${elementId} = adafruit_display_text.label.Label(
-     ${element.text.font === "default" ? "terminalio.FONT" : "terminalio.FONT"},
+     ${element.text.font === "terminalio" ? "terminalio.FONT" : "terminalio.FONT"},
     color=${convertColor(element.text.color)},
     text="${element.text.content}")
 ${elementId}.x = ${element.position.x}

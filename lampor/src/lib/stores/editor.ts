@@ -27,7 +27,7 @@ class TextElement implements EditorElement {
 	};
 
 	text = {
-		font: "default",
+		font: "terminalio",
 		size: 12,
 		content: "Enter Text",
 		color: "#ffffff",

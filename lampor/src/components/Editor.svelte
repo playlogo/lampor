@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import store from "../lib/stores/editor";
 
 	const WIDTH = 64;
@@ -8,8 +9,22 @@
 
 	let area: HTMLElement;
 
-	let dragging_position = { x: 0, y: 0 };
+	let dragging_position = { start_pageX: 0, start_pageY: 0, start_elementX: 0, start_elementY: 0 };
+
+	/* Handle font size */
+	const FONT_MULTIPLIER = 10;
+	let fontSize = $state(FONT_MULTIPLIER);
+
+	function dispatchResize(_event: any) {
+		fontSize = (area.getBoundingClientRect().width / 640) * FONT_MULTIPLIER;
+	}
+
+	onMount(() => {
+		dispatchResize(undefined);
+	});
 </script>
+
+<svelte:window onresize={dispatchResize} />
 
 <div class="main">
 	<div class="area" bind:this={area}>
@@ -21,13 +36,17 @@
 				draggable="true"
 				role="button"
 				tabindex="0"
-				style={`top: calc(${(element.position.y / HIGHT) * 100}% - 16px); left: calc(${(element.position.x / WIDTH) * 100}% - 16px)`}
+				style={`top: calc(${(element.position.y / HIGHT) * 100}% - 96px); left: calc(${(element.position.x / WIDTH) * 100}% - 28px)`}
 				ondragend={(event) => {
-					const deltaX = event.pageX - dragging_position.x;
-					const deltaY = event.pageY - dragging_position.y;
+					const deltaX = event.pageX - dragging_position.start_pageX;
+					const deltaY = event.pageY - dragging_position.start_pageY;
 
-					const newPosX = element.position.x + (deltaX / area.clientWidth) * 64;
-					const newPosY = element.position.y + (deltaY / area.clientHeight) * 32;
+					const newPosX = Math.floor(
+						dragging_position.start_elementX + (deltaX / area.clientWidth) * 64
+					);
+					const newPosY = Math.floor(
+						dragging_position.start_elementY + (deltaY / area.clientHeight) * 32
+					);
 
 					if (
 						newPosX < -MAX_OVERFLOW ||
@@ -42,11 +61,32 @@
 					element.position.x = newPosX;
 					element.position.y = newPosY;
 				}}
-				ondragstart={(event) => {
+				ondragstart={(event: DragEvent) => {
 					dragging_position = {
-						x: event.pageX,
-						y: event.pageY,
+						start_pageX: event.pageX,
+						start_pageY: event.pageY,
+						start_elementX: $state.snapshot(element.position.x),
+						start_elementY: $state.snapshot(element.position.y),
 					};
+
+					// Hide image
+					const img = new Image();
+					img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=";
+					event.dataTransfer!.setDragImage(img, 0, 0);
+				}}
+				ondrag={(event) => {
+					const deltaX = event.pageX - dragging_position.start_pageX;
+					const deltaY = event.pageY - dragging_position.start_pageY;
+
+					const newPosX = Math.floor(
+						dragging_position.start_elementX + (deltaX / area.clientWidth) * 64
+					);
+					const newPosY = Math.floor(
+						dragging_position.start_elementY + (deltaY / area.clientHeight) * 32
+					);
+
+					element.position.x = newPosX;
+					element.position.y = newPosY;
 				}}
 				onclick={() => {
 					$store.selected = element;
@@ -56,7 +96,7 @@
 					<input
 						bind:value={element.text.content}
 						type="text"
-						style={`font-size: ${element.text.size * 20}%; color: ${element.text.color}`}
+						style={`font-size: ${element.text.size * fontSize}px; color: ${element.text.color}`}
 					/>
 				{/if}
 			</div>
@@ -89,6 +129,7 @@
 		position: absolute;
 
 		padding: 16px;
+		contain: layout;
 	}
 
 	.element:hover {
@@ -110,6 +151,8 @@
 		border: none;
 
 		field-sizing: content;
+
+		font-family: "Terminus";
 	}
 
 	.element:has(input:focus) {
