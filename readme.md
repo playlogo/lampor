@@ -4,9 +4,9 @@ Easily layout your next LED matrix project using Lampor!
 
 Add, move and style text elements and export simple boilerplate code to bring to live: [Guide](#guide)
 
-![Screenshot of frontend](docs/frontend.png)
-![Screenshot of the generated boilerplate code with **your** design](docs/code.png)
-![Demo of the generated code](docs/editor.png)
+![Screenshot of frontend](https://raw.githubusercontent.com/playlogo/lampor/refs/heads/main/docs/frontend.png)
+![Screenshot of the generated boilerplate code with **your** design](https://raw.githubusercontent.com/playlogo/lampor/refs/heads/main/docs/code.png)
+![Demo of the generated code](https://raw.githubusercontent.com/playlogo/lampor/refs/heads/main/docs/editor.png)
 
 ## Guide
 
